@@ -5,9 +5,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, CircularProgress } from '@material-ui/core';
 
 const useStyles = makeStyles({
-    actions: {
-        justifyContent: 'center',
-    },
     loader: {
         position: 'absolute',
         top: 0,
@@ -40,7 +37,8 @@ const Login = ({auth, setAuth}) => {
         setError(false);
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = e => {
+        e.preventDefault();
         setLoad(true);
 
         const url = 'http://localhost:8080/api/login';
@@ -69,40 +67,43 @@ const Login = ({auth, setAuth}) => {
         <Dialog
             open={auth === null}
         >
-            <DialogTitle>
-                Login
-            </DialogTitle>
-            <DialogContent>
-                <TextField
-                    label='username'
-                    fullWidth
-                    value={username}
-                    onChange={e => handleChange('username', e.target.value)}
-                    error={error}
-                    disabled={load}
-                />
-                <TextField
-                    label='password'
-                    fullWidth
-                    type='password'
-                    value={password}
-                    onChange={e => handleChange('password', e.target.value)}
-                    error={error}
-                    disabled={load}
-                />
-            </DialogContent>
-            <DialogActions
-                className={classes.actions}
-            >
-                <Button 
-                    onClick={handleSubmit}
-                    variant='contained'
-                    color='primary'
-                    disabled={load}
-                >
+            <form>
+                <DialogTitle>
                     Login
-                </Button>
-            </DialogActions>
+                </DialogTitle>
+                <DialogContent>
+                    <TextField
+                        label='username'
+                        fullWidth
+                        value={username}
+                        onChange={e => handleChange('username', e.target.value)}
+                        error={error}
+                        disabled={load}
+                        autoFocus
+                    />
+                    <TextField
+                        label='password'
+                        fullWidth
+                        type='password'
+                        value={password}
+                        onChange={e => handleChange('password', e.target.value)}
+                        error={error}
+                        disabled={load}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button 
+                        onClick={handleSubmit}
+                        variant='contained'
+                        color='primary'
+                        disabled={load}
+                        type="submit"
+                        fullWidth
+                    >
+                        Login
+                    </Button>
+                </DialogActions>
+            </form>
             {load && <CircularProgress className={classes.loader}/>}
         </Dialog>
     );

@@ -1,17 +1,41 @@
 import React, { useState } from 'react';
 import { Link } from "react-router-dom";
+import { makeStyles } from '@material-ui/core/styles';
 import { AppBar, Toolbar, Button, Box, IconButton } from '@material-ui/core';
-import MenuIcon from '@material-ui/icons/Menu';;   
+import MenuIcon from '@material-ui/icons/Menu';   
+import { colors } from '../helpers/colors';
+
+const useStyles = makeStyles(theme => ({
+    button: {
+        color: colors.white,
+    },
+    containerNormalMenu: {
+        display: 'none',
+        [theme.breakpoints.up('600')]: {
+            display: 'flex'
+        },
+    },
+    containerMobileMenu: {
+        display: 'flex',
+        [theme.breakpoints.up('600')]: {
+            display: 'none'
+        },
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start'
+    },
+}));
+
+const pages = [
+    {name: 'HOME', path: '/'},
+    {name: 'Projects', path: '/projects'},
+    {name: 'Layers', path: '/layers'},
+]
 
 const Nav = () => {
+    const classes = useStyles();
 
     const [anchorElNav, setAnchorElNav] = useState(false);
-
-    const pages = [
-        {name: 'HOME', path: '/'},
-        {name: 'Projects', path: '/projects'},
-        {name: 'Layers', path: '/layers'},
-    ]
 
     const handleOpenNavMenu = () => {
         setAnchorElNav(prev => !prev);
@@ -21,9 +45,9 @@ const Nav = () => {
         return (
             pages.map((page) => (
                 <Button
+                    className={classes.button}
                     key={`nav_button_${page.name}`}
                     component={Link} to={page.path}
-                    sx={{ color: 'white', display: 'block' }}
                 >
                     {page.name}
                 </Button>
@@ -33,10 +57,10 @@ const Nav = () => {
 
     const renderMobileMenu = () => {
         return (
-            <Box sx={{ display: { xs: 'flex', md: 'none' }, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+            <Box className={classes.containerMobileMenu}>
                 <IconButton
+                    className={classes.button}
                     onClick={handleOpenNavMenu}
-                    sx={{ color: 'white', display: 'block' }}
                 >
                     <MenuIcon />
                 </IconButton>
@@ -47,7 +71,7 @@ const Nav = () => {
 
     const renderNormalMenu = () => {
         return (
-            <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+            <Box className={classes.containerNormalMenu}>
                 {renderButtons()}
             </Box>
         )
