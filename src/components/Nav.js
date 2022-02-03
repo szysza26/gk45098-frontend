@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { Link } from "react-router-dom";
 import { AppBar, Toolbar, Button, Box, IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';   
 
@@ -7,10 +8,9 @@ const Nav = () => {
     const [anchorElNav, setAnchorElNav] = useState(false);
 
     const pages = [
-        {name: 'HOME', action: () => console.log("click home")},
-        {name: 'Projects', action: () => console.log("click projects")},
-        {name: 'Layers', action: () => console.log("click layers")},
-        {name: 'Account', action: () => console.log("click account")}
+        {name: 'HOME', path: '/'},
+        {name: 'Projects', path: '/projects'},
+        {name: 'Layers', path: '/layers'},
     ]
 
     const handleOpenNavMenu = () => {
@@ -22,7 +22,7 @@ const Nav = () => {
             pages.map((page) => (
                 <Button
                     key={`nav_button_${page.name}`}
-                    onClick={page.action}
+                    component={Link} to={page.path}
                     sx={{ color: 'white', display: 'block' }}
                 >
                     {page.name}
