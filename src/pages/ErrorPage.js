@@ -4,7 +4,7 @@ import { Box } from '@material-ui/core';
 
 const useStyles = makeStyles({
     container: {
-        color: 'red',
+        padding: 20,
     },
 });
 

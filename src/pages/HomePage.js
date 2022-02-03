@@ -1,19 +1,30 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 
 const useStyles = makeStyles({
     container: {
-        color: 'red',
+        padding: 20,
     },
 });
 
-const HomePage = () => {
+const HomePage = ({auth}) => {
     const classes = useStyles();
 
     return (
         <Box className={classes.container}>
-            HOME PAGE
+            <Typography variant='h6'>
+                <b>Username: </b>{auth.username}
+            </Typography>
+            <Typography variant='h6'>
+                <b>Role: </b>{auth.role}
+            </Typography>
+            <Typography variant='h6'>
+                <b>Token: </b>{auth.token}
+            </Typography>
+            <Typography variant='h6'>
+                <b>Expire: </b>{new Date(auth.exp).toISOString()}
+            </Typography>
         </Box>
     );
 }

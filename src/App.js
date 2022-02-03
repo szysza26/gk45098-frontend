@@ -32,18 +32,22 @@ const App = () => {
     <Box className={classes.root}>
       <CssBaseline />
       <Nav/>
-      <Box className={classes.content}>
-        <Routes>
-          <Route path="/" element={<HomePage/>} />
-          <Route path="/projects" element={<ProjectsPage/>} />
-          <Route path="/layers" element={<LayersPage/>} />
-          <Route path="*" element={<ErrorPage/>} />
-        </Routes>
-      </Box>
-      <Login
-        auth={auth}
-        setAuth={setAuth}
-      />
+      {
+        auth === null ?
+          <Login
+            auth={auth}
+            setAuth={setAuth}
+          />
+        :
+        <Box className={classes.content}>
+          <Routes>
+            <Route path="/" element={<HomePage auth={auth} />} />
+            <Route path="/projects" element={<ProjectsPage auth={auth} />} />
+            <Route path="/layers" element={<LayersPage auth={auth} />} />
+            <Route path="*" element={<ErrorPage/>} />
+          </Routes>
+        </Box>
+      }
     </Box>
   );
 }
