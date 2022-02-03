@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography, Divider } from '@material-ui/core';
+import { Box, Typography, Divider, CircularProgress } from '@material-ui/core';
 import ProjectsList from '../components/project/ProjectsList';
 
 const useStyles = makeStyles({
@@ -12,8 +13,28 @@ const useStyles = makeStyles({
     }
 });
 
-const ProjectsPage = () => {
+const ProjectsPage = ({auth}) => {
     const classes = useStyles();
+
+    const [needUpdateProjects, setNeedUpdateProjects] = useState(true);
+    const [projects, setProjects] = useState([]);
+
+    useEffect(() => {
+        if(!needUpdateProjects || !auth?.token) return;
+
+        const url = 'http://localhost:8080/api/projects';
+        const config = { headers: { Authorization: `Bearer ${auth.token}` } }
+
+        axios.get(url, config)
+            .then(res => {
+                setProjects(res.data);
+            }).catch(err => {
+                console.log(err);
+            }).finally(() => {
+                setNeedUpdateProjects(false);
+            })
+        
+    }, [needUpdateProjects, auth])
 
     return (
         <Box className={classes.container}>
@@ -21,13 +42,13 @@ const ProjectsPage = () => {
                 PROJECTS PAGE
             </Typography>
             <Divider className={classes.divider} />
-            <ProjectsList 
-                projects={[
-                    {id: 1, name: "Project1"},
-                    {id: 2, name: "Project2"},
-                    {id: 3, name: "Project3"},
-                ]}
-            />
+            {needUpdateProjects ?
+                <CircularProgress />
+                :
+                <ProjectsList 
+                    projects={projects}
+                />
+            }
         </Box>
     );
 }
