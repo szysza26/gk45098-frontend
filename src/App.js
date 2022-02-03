@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { makeStyles } from '@mui/styles';
-import { CssBaseline, Box } from '@mui/material';
+import { makeStyles } from '@material-ui/core/styles';
+import { CssBaseline, Box } from '@material-ui/core';
 import Nav from './components/Nav';
 import HomePage from './pages/HomePage';
 import ProjectsPage from './pages/ProjectsPage';
 import LayersPage from './pages/LayersPage';
 import ErrorPage from './pages/ErrorPage';
+import Login from './components/auth/Login';
 
 const useStyles = makeStyles({
   root: {
@@ -21,6 +22,12 @@ const useStyles = makeStyles({
 const App = () => {
   const classes = useStyles();
 
+  const [auth, setAuth] = useState(null);
+
+  useEffect(() => {
+    console.log(auth);
+  }, [auth])
+
   return (
     <Box className={classes.root}>
       <CssBaseline />
@@ -33,6 +40,10 @@ const App = () => {
           <Route path="*" element={<ErrorPage/>} />
         </Routes>
       </Box>
+      <Login
+        auth={auth}
+        setAuth={setAuth}
+      />
     </Box>
   );
 }

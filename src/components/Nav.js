@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from "react-router-dom";
-import { AppBar, Toolbar, Button, Box, IconButton } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';   
+import { AppBar, Toolbar, Button, Box, IconButton } from '@material-ui/core';
+import MenuIcon from '@material-ui/icons/Menu';;   
 
 const Nav = () => {
 
