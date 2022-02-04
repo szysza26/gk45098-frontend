@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
+import jwt_decode from 'jwt-decode';
 import { makeStyles } from '@material-ui/core/styles';
 import { CssBaseline, Box } from '@material-ui/core';
 import Nav from './components/Nav';
@@ -27,7 +28,41 @@ const App = () => {
   const [auth, setAuth] = useState(null);
 
   useEffect(() => {
-    console.log(auth);
+    if(!auth){
+      const token = localStorage.getItem('token');
+      
+      if(!token) return;
+
+      try{
+        const data = jwt_decode(token);
+        setAuth({
+          token: token,
+          role: data.role,
+          username: data.sub,
+          exp: data.exp
+        })
+      }catch(e){
+        console.log(e);
+      }
+    }else{
+      const curentTime = new Date().getTime();
+      const expireTime = auth.exp * 1000;
+      const delta = expireTime - curentTime;
+      if(delta <= 0){
+        localStorage.removeItem('token');
+        setAuth(null);
+      }else{
+        localStorage.setItem('token', auth.token)
+        const timeout = setTimeout(() => {
+          localStorage.removeItem('token');
+          setAuth(null);
+        }, delta)
+        return () => {
+          clearTimeout(timeout);
+        }
+      }
+    }
+
   }, [auth])
 
   return (
