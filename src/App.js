@@ -15,10 +15,12 @@ import Login from './components/auth/Login';
 const useStyles = makeStyles({
   root: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    height: '100%',
   },
   content: {
     marginTop: 64,
+    height: 'calc(100% - 64px)',
   },
 });
 
