@@ -8,6 +8,8 @@ import { createTileLayer, createVectorLayer } from '../tools/layers';
 import { createOSM, createVectorSource } from '../tools/sources';
 import { createDefaultStyles } from '../tools/styles';
 import { createModify, createDraw, createSnap } from "../tools/interactions";
+import { Vector as VectorLayer } from 'ol/layer';
+import GeoJSON from 'ol/format/GeoJSON';
 
 const useStyles = makeStyles({
     map: {
@@ -16,7 +18,7 @@ const useStyles = makeStyles({
     },
 });
 
-const Map = React.memo(({layer}) => {
+const Map = React.memo(({layer, requestSynchronize, synchronizeLayer}) => {
     const classes = useStyles();
     const mapRef = useRef(null);
 
@@ -56,6 +58,19 @@ const Map = React.memo(({layer}) => {
         })
 
     }, [layer])
+
+    useEffect(() => {
+        if(!mapRef?.current || !requestSynchronize) return;
+
+        const vectorLayer = mapRef.current.getLayers().array_.filter(l => l instanceof VectorLayer)[0];
+        if(!vectorLayer){
+            synchronizeLayer(null);
+        }else{
+            const features = vectorLayer.getSource().getFeatures();
+            synchronizeLayer(new GeoJSON().writeFeatures(features, {dataProjection: 'EPSG:4326', featureProjection: "EPSG:3857"}));
+        }
+
+    }, [requestSynchronize, synchronizeLayer])
 
     return (
         <div id="map" className={classes.map}></div>

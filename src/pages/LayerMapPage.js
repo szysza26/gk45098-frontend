@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography, Button } from '@material-ui/core';
 import Map from '../components/Map';
 
 const useStyles = makeStyles({
@@ -17,13 +17,17 @@ const useStyles = makeStyles({
         width: '100%',
         position: 'absolute',
         textAlign: 'center',
-    }
+    },
+    synchronizeButton: {
+        pointerEvents: 'auto',
+    },
 });
 
 const LayerMapPage = ({auth}) => {
     const classes = useStyles();
     const params = useParams();
 
+    const [requestSynchronize, setRequestSynchronize] = useState(false);
     const [needUpdateLayer, setNeedUpdateLayer] = useState(true);
     const [layer, setLayer] = useState(null);
 
@@ -44,15 +48,45 @@ const LayerMapPage = ({auth}) => {
 
     }, [needUpdateLayer, auth, params])
 
+    const synchronizeLayer = (featureCollection) => {
+        const url = `http://localhost:8080/api/layers/${params.id}`
+        const config = { headers: { Authorization: `Bearer ${auth.token}` } }
+
+        const data = {
+            ...layer,
+            data: JSON.parse(featureCollection)
+        }
+        delete data.id
+        delete data.data.id
+        data.data.features.forEach(feature => delete feature.id)
+
+        axios.put(url, data, config)
+            .catch(err => {
+                console.log(err);
+            }).finally(() => {
+                setRequestSynchronize(false);
+                setNeedUpdateLayer(true);
+            })
+    }
+
     return (
         <Box className={classes.container}>
             <Box className={classes.header}>
                 <Typography variant='h6'>
                     Layer Map Page with id: {params.id}
                 </Typography>
+                <Button 
+                    className={classes.synchronizeButton}
+                    variant='contained'
+                    onClick={() => setRequestSynchronize(true)}
+                >
+                    SYNCHRONIZE
+                </Button>
             </Box>
             <Map
                 layer={layer}
+                requestSynchronize={requestSynchronize}
+                synchronizeLayer={synchronizeLayer}
             />
         </Box>
     );
