@@ -7,6 +7,7 @@ import 'ol/ol.css';
 import { createTileLayer, createVectorLayer } from '../tools/layers';
 import { createOSM, createVectorSource } from '../tools/sources';
 import { createDefaultStyles } from '../tools/styles';
+import { createModify, createDraw, createSnap } from "../tools/interactions";
 
 const useStyles = makeStyles({
     map: {
@@ -33,15 +34,25 @@ const Map = React.memo(({layer}) => {
     useEffect(() => {
         if(!mapRef?.current || !layer) return;
 
-        const vectorLayer = createVectorLayer(
-            createVectorSource(layer.data), 
-            createDefaultStyles()
-        );
-        
+        const style = createDefaultStyles();
+        const vectorSource = createVectorSource(layer.data);
+        const vectorLayer = createVectorLayer(vectorSource, style);
         mapRef.current.addLayer(vectorLayer);
+        
+        const modify = createModify(vectorSource);
+        mapRef.current.addInteraction(modify);
+
+        const draw = createDraw(vectorSource, layer.type);
+        mapRef.current.addInteraction(draw);
+
+        const snap = createSnap(vectorSource);
+        mapRef.current.addInteraction(snap);
 
         return(() => {
             mapRef.current.removeLayer(vectorLayer);
+            mapRef.current.removeInteraction(modify);
+            mapRef.current.removeInteraction(draw);
+            mapRef.current.removeInteraction(snap);
         })
 
     }, [layer])
