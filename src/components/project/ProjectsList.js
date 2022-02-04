@@ -66,7 +66,7 @@ const useStyles = makeStyles({
     },
 });
 
-const ProjectsList = ({projects}) => {
+const ProjectsList = ({projects, showProject, editProject, deleteProject, addProject}) => {
     const classes = useStyles();
 
     const renderProjectItem = ({id, name}) => {
@@ -85,7 +85,7 @@ const ProjectsList = ({projects}) => {
                     <Tooltip title="show">
                         <IconButton
                             className={classes.showButton}
-                            onClick={e => console.log('show', id)}
+                            onClick={() => showProject(id)}
                         >
                             <VisibilityIcon/>
                         </IconButton>
@@ -93,7 +93,7 @@ const ProjectsList = ({projects}) => {
                     <Tooltip title="edit">
                         <IconButton
                             className={classes.editButton}
-                            onClick={e => console.log('edit', id)}
+                            onClick={() => editProject(id)}
                         >
                             <EditIcon/>
                         </IconButton>
@@ -101,7 +101,7 @@ const ProjectsList = ({projects}) => {
                     <Tooltip title="delete">
                         <IconButton
                             className={classes.deleteButton}
-                            onClick={e => console.log('delete', id)}
+                            onClick={() => deleteProject(id)}
                         >
                             <DeleteIcon />
                         </IconButton>
@@ -116,7 +116,7 @@ const ProjectsList = ({projects}) => {
             <ListItem 
                 button 
                 className={classes.addProjectButton}
-                onClick={e => console.log('add')}
+                onClick={() => addProject()}
             >
                 ADD PROJECT
             </ListItem>

@@ -5,7 +5,9 @@ import { CssBaseline, Box } from '@material-ui/core';
 import Nav from './components/Nav';
 import HomePage from './pages/HomePage';
 import ProjectsPage from './pages/ProjectsPage';
+import ProjectMapPage from './pages/ProjectMapPage';
 import LayersPage from './pages/LayersPage';
+import LayerMapPage from './pages/LayerMapPage';
 import ErrorPage from './pages/ErrorPage';
 import Login from './components/auth/Login';
 
@@ -43,7 +45,9 @@ const App = () => {
           <Routes>
             <Route path="/" element={<HomePage auth={auth} />} />
             <Route path="/projects" element={<ProjectsPage auth={auth} />} />
+            <Route path="/projects/:id/map" element={<ProjectMapPage auth={auth} />} />
             <Route path="/layers" element={<LayersPage auth={auth} />} />
+            <Route path="/layers/:id/map" element={<LayerMapPage auth={auth} />} />
             <Route path="*" element={<ErrorPage/>} />
           </Routes>
         </Box>
