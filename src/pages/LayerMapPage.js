@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography } from '@material-ui/core';
@@ -19,9 +20,29 @@ const useStyles = makeStyles({
     }
 });
 
-const LayerMapPage = () => {
+const LayerMapPage = ({auth}) => {
     const classes = useStyles();
     const params = useParams();
+
+    const [needUpdateLayer, setNeedUpdateLayer] = useState(true);
+    const [layer, setLayer] = useState(null);
+
+    useEffect(() => {
+        if(!needUpdateLayer || !auth?.token) return;
+
+        const url = `http://localhost:8080/api/layers/${params.id}`;
+        const config = { headers: { Authorization: `Bearer ${auth.token}` } }
+
+        axios.get(url, config)
+            .then(res => {
+                setLayer(res.data);
+            }).catch(err => {
+                console.log(err);
+            }).finally(() => {
+                setNeedUpdateLayer(false);
+            })
+
+    }, [needUpdateLayer, auth, params])
 
     return (
         <Box className={classes.container}>
@@ -30,7 +51,9 @@ const LayerMapPage = () => {
                     Layer Map Page with id: {params.id}
                 </Typography>
             </Box>
-            <Map/>
+            <Map
+                layer={layer}
+            />
         </Box>
     );
 }
