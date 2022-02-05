@@ -103,6 +103,7 @@ const ProjectLayerActionDialog = ({action, setAction, availableLayers, addProjec
                     fullWidth
                     value={layerId}
                     onChange={e => handleChange('layerId', e.target.value)}
+                    disabled={action?.type === 'edit'}
                 >
                     {availableLayers.map(layer => (
                         <MenuItem key={`layer_${layer.id}`} value={layer.id}>

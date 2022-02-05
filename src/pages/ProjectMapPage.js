@@ -130,6 +130,7 @@ const ProjectMapPage = ({auth}) => {
             />
             <Map
                 project={project}
+                auth={auth}
             />
         </Box>
     );

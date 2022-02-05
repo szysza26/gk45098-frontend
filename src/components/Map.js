@@ -5,7 +5,7 @@ import olView from 'ol/View';
 import * as proj from 'ol/proj';
 import 'ol/ol.css';
 import { createTileLayer, createVectorLayer } from '../tools/layers';
-import { createOSM, createVectorSource } from '../tools/sources';
+import { createOSM, createVectorSourceFromData, createVectorSourceFromUrl } from '../tools/sources';
 import { createDefaultStyles } from '../tools/styles';
 import { createModify, createDraw, createSnap } from "../tools/interactions";
 import { Vector as VectorLayer } from 'ol/layer';
@@ -18,7 +18,7 @@ const useStyles = makeStyles({
     },
 });
 
-const Map = React.memo(({layer, requestSynchronizeLayer, synchronizeLayer, project}) => {
+const Map = React.memo(({layer, requestSynchronizeLayer, synchronizeLayer, project, auth}) => {
     const classes = useStyles();
     const mapRef = useRef(null);
 
@@ -37,7 +37,7 @@ const Map = React.memo(({layer, requestSynchronizeLayer, synchronizeLayer, proje
         if(!mapRef?.current || !layer) return;
 
         const style = createDefaultStyles();
-        const vectorSource = createVectorSource(layer.data);
+        const vectorSource = createVectorSourceFromData(layer.data);
         const vectorLayer = createVectorLayer(vectorSource, style);
         mapRef.current.addLayer(vectorLayer);
         
@@ -73,8 +73,27 @@ const Map = React.memo(({layer, requestSynchronizeLayer, synchronizeLayer, proje
     }, [requestSynchronizeLayer, synchronizeLayer])
 
     useEffect(() => {
-        console.log(project);
-    }, [project])
+        if(!auth?.token || !mapRef?.current || !project) return;
+
+        const prevLayers = mapRef.current.getLayers().array_.filter(layer => layer instanceof VectorLayer);
+        const prevLayersId = prevLayers.map(layer => layer.get('idProjectLayer'));
+        const currentLayersId = project.layers.map(projectLayer => projectLayer.id);
+
+        prevLayers.forEach(layer => {
+            if(currentLayersId.includes(layer.get('idProjectLayer'))) return;
+            mapRef.current.removeLayer(layer);
+        })
+
+        project.layers.forEach(projectLayer => {
+            if(prevLayersId.includes(projectLayer.id)) return;
+            const style = createDefaultStyles();
+            const vectorSource = createVectorSourceFromUrl(`http://localhost:8080/api/layers/${projectLayer.layerId}`, auth.token);
+            const vectorLayer = createVectorLayer(vectorSource, style);
+            vectorLayer.set('idProjectLayer', projectLayer.id);
+            mapRef.current.addLayer(vectorLayer);
+        })
+
+    }, [auth, project])
 
     return (
         <div id="map" className={classes.map}></div>
