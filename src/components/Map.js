@@ -18,7 +18,7 @@ const useStyles = makeStyles({
     },
 });
 
-const Map = React.memo(({layer, requestSynchronize, synchronizeLayer}) => {
+const Map = React.memo(({layer, requestSynchronizeLayer, synchronizeLayer, projectLayers}) => {
     const classes = useStyles();
     const mapRef = useRef(null);
 
@@ -60,7 +60,7 @@ const Map = React.memo(({layer, requestSynchronize, synchronizeLayer}) => {
     }, [layer])
 
     useEffect(() => {
-        if(!mapRef?.current || !requestSynchronize) return;
+        if(!mapRef?.current || !requestSynchronizeLayer) return;
 
         const vectorLayer = mapRef.current.getLayers().array_.filter(l => l instanceof VectorLayer)[0];
         if(!vectorLayer){
@@ -70,7 +70,11 @@ const Map = React.memo(({layer, requestSynchronize, synchronizeLayer}) => {
             synchronizeLayer(new GeoJSON().writeFeatures(features, {dataProjection: 'EPSG:4326', featureProjection: "EPSG:3857"}));
         }
 
-    }, [requestSynchronize, synchronizeLayer])
+    }, [requestSynchronizeLayer, synchronizeLayer])
+
+    useEffect(() => {
+        console.log(projectLayers);
+    }, [projectLayers])
 
     return (
         <div id="map" className={classes.map}></div>

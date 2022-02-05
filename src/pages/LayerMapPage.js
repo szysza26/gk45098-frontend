@@ -27,7 +27,7 @@ const LayerMapPage = ({auth}) => {
     const classes = useStyles();
     const params = useParams();
 
-    const [requestSynchronize, setRequestSynchronize] = useState(false);
+    const [requestSynchronizeLayer, setRequestSynchronizeLayer] = useState(false);
     const [needUpdateLayer, setNeedUpdateLayer] = useState(true);
     const [layer, setLayer] = useState(null);
 
@@ -64,7 +64,7 @@ const LayerMapPage = ({auth}) => {
             .catch(err => {
                 console.log(err);
             }).finally(() => {
-                setRequestSynchronize(false);
+                setRequestSynchronizeLayer(false);
                 setNeedUpdateLayer(true);
             })
     }
@@ -78,14 +78,14 @@ const LayerMapPage = ({auth}) => {
                 <Button 
                     className={classes.synchronizeButton}
                     variant='contained'
-                    onClick={() => setRequestSynchronize(true)}
+                    onClick={() => setRequestSynchronizeLayer(true)}
                 >
                     SYNCHRONIZE
                 </Button>
             </Box>
             <Map
                 layer={layer}
-                requestSynchronize={requestSynchronize}
+                requestSynchronizeLayer={requestSynchronizeLayer}
                 synchronizeLayer={synchronizeLayer}
             />
         </Box>
