@@ -5,8 +5,8 @@ const ProjectLayerActionDialog = ({action, setAction, availableLayers, addProjec
     const [nameInLegend, setNameInLegend] = useState('');
     const [zIndex, setZIndex] = useState(0);
     const [style, setStyle] = useState({});
-    const [projectId, setProjectId] = useState(null);
-    const [layerId, setLayerId] = useState(null);
+    const [projectId, setProjectId] = useState('');
+    const [layerId, setLayerId] = useState('');
 
     useEffect(() => {
         if(!action || !action.projectLayer) return;

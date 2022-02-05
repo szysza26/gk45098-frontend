@@ -18,7 +18,7 @@ const useStyles = makeStyles({
     },
 });
 
-const ProjectMapMenu = ({open, toggle, projectId, projectLayers, availableLayers, addProjectLayer, editProjectLayer, deleteProjectLayer}) => {
+const ProjectMapMenu = ({open, toggle, project, availableLayers, addProjectLayer, editProjectLayer, deleteProjectLayer}) => {
     const classes = useStyles();
 
     const [action, setAction] = useState(null);
@@ -29,7 +29,7 @@ const ProjectMapMenu = ({open, toggle, projectId, projectLayers, availableLayers
             id: null,
             projectLayer: {
                 nameInLegend: '',
-                zIndex: null,
+                zIndex: '',
                 style: {
                     pointColor: 'red',
                     strokeColor: 'green',
@@ -38,8 +38,8 @@ const ProjectMapMenu = ({open, toggle, projectId, projectLayers, availableLayers
                     strokeWidth: 2.1,
                     strokeStyle: 'solid'
                 },
-                projectId: projectId,
-                layerId: null
+                projectId: project.id,
+                layerId: ''
             },
         })
     }
@@ -52,7 +52,7 @@ const ProjectMapMenu = ({open, toggle, projectId, projectLayers, availableLayers
                 nameInLegend: projectLayer.nameInLegend,
                 zIndex: projectLayer.zIndex,
                 style: projectLayer.style,
-                projectId: projectId,
+                projectId: project.id,
                 layerId: projectLayer.layerId
             },
         })
@@ -121,7 +121,7 @@ const ProjectMapMenu = ({open, toggle, projectId, projectLayers, availableLayers
         >
             <Box className={classes.container}>
                 <List>
-                    {projectLayers.map(projectLayer => renderProjectLayerItem(projectLayer))}
+                    {project?.layers.map(projectLayer => renderProjectLayerItem(projectLayer))}
                     {renderAddProjectLayer()}
                 </List>
             </Box>

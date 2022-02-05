@@ -18,7 +18,7 @@ const useStyles = makeStyles({
     },
 });
 
-const Map = React.memo(({layer, requestSynchronizeLayer, synchronizeLayer, projectLayers}) => {
+const Map = React.memo(({layer, requestSynchronizeLayer, synchronizeLayer, project}) => {
     const classes = useStyles();
     const mapRef = useRef(null);
 
@@ -73,8 +73,8 @@ const Map = React.memo(({layer, requestSynchronizeLayer, synchronizeLayer, proje
     }, [requestSynchronizeLayer, synchronizeLayer])
 
     useEffect(() => {
-        console.log(projectLayers);
-    }, [projectLayers])
+        console.log(project);
+    }, [project])
 
     return (
         <div id="map" className={classes.map}></div>

@@ -30,28 +30,17 @@ const ProjectMapPage = ({auth}) => {
     const params = useParams();
 
     const [isOpenMenu, setIsOpenMenu] = useState(false);
-    const [projectId, setProjectId] = useState(params.id);
-    const [projectName, setProjectName] = useState('');
-    const [projectLayers, setProjectLayers] = useState([]);
+    const [needUpdateProject, setNeedUpdateProject] = useState(true);
+    const [project, setProject] = useState(null);
     const [availableLayers, setAvailableLayers] = useState([]);
 
     useEffect(() => {
         if(!auth?.token) return;
 
         const config = { headers: { Authorization: `Bearer ${auth.token}` } }
-        
-        const projectUrl = `http://localhost:8080/api/projects/${params.id}`;
-        axios.get(projectUrl, config)
-            .then(res => {
-                setProjectId(res.data.id)
-                setProjectName(res.data.name);
-                setProjectLayers(res.data.layers);
-            }).catch(err => {
-                console.log(err);
-            })
+        const url = 'http://localhost:8080/api/layers';
 
-        const layerUrl = 'http://localhost:8080/api/layers';
-        axios.get(layerUrl, config)
+        axios.get(url, config)
             .then(res => {
                 setAvailableLayers(res.data);
             }).catch(err => {
@@ -59,6 +48,23 @@ const ProjectMapPage = ({auth}) => {
             })
 
     }, [auth, params])
+
+    useEffect(() => {
+        if(!needUpdateProject || !auth?.token) return;
+
+        const config = { headers: { Authorization: `Bearer ${auth.token}` } }
+        const url = `http://localhost:8080/api/projects/${params.id}`;
+
+        axios.get(url, config)
+            .then(res => {
+                setProject(res.data);
+            }).catch(err => {
+                console.log(err);
+            }).finally(() => {
+                setNeedUpdateProject(false);
+            })
+
+    }, [needUpdateProject, auth, params])
 
     const toggleMenu = () => {
         setIsOpenMenu(prev => !prev);
@@ -70,7 +76,7 @@ const ProjectMapPage = ({auth}) => {
 
         axios.post(url, data, config)
             .then(res => {
-                setProjectLayers(prev => ([...prev, data]));
+                setNeedUpdateProject(true);
             }).catch(err => {
                 console.log(err);
             })
@@ -82,10 +88,7 @@ const ProjectMapPage = ({auth}) => {
 
         axios.put(url, data, config)
             .then(res => {
-                setProjectLayers(prev => prev.map(layer => {
-                    if(layer.id === id) return data;
-                    return layer;
-                }));
+                setNeedUpdateProject(true);
             }).catch(err => {
                 console.log(err);
             })
@@ -97,7 +100,7 @@ const ProjectMapPage = ({auth}) => {
 
         axios.delete(url, config)
             .then(res => {
-                setProjectLayers(prev => prev.filter(layer => layer.id !== id));
+                setNeedUpdateProject(true);
             }).catch(err => {
                 console.log(err);
             })
@@ -107,7 +110,7 @@ const ProjectMapPage = ({auth}) => {
         <Box className={classes.container}>
             <Box className={classes.header}>
                 <Typography variant='h6'>
-                    Project Map Page - name: {projectName}, id: {projectId}
+                    Project Map Page - name: {project?.name}, id: {project?.id}
                 </Typography>
                 <IconButton 
                     className={classes.hamburger}
@@ -119,15 +122,14 @@ const ProjectMapPage = ({auth}) => {
             <ProjectMapMenu
                 open={isOpenMenu}
                 toggle={toggleMenu}
-                projectId={projectId}
-                projectLayers={projectLayers}
+                project={project}
                 availableLayers={availableLayers}
                 addProjectLayer={addProjectLayer}
                 editProjectLayer={editProjectLayer}
                 deleteProjectLayer={deleteProjectLayer}
             />
             <Map
-                projectLayers={projectLayers}
+                project={project}
             />
         </Box>
     );
