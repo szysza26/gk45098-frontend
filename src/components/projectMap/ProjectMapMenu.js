@@ -34,9 +34,8 @@ const ProjectMapMenu = ({open, toggle, project, availableLayers, addProjectLayer
                     pointColor: 'red',
                     strokeColor: 'green',
                     fillColor: 'blue',
-                    pointSize: 1.2,
-                    strokeWidth: 2.1,
-                    strokeStyle: 'solid'
+                    pointSize: 5,
+                    strokeWidth: 2
                 },
                 projectId: project.id,
                 layerId: ''

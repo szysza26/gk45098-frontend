@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography, Divider, CircularProgress } from '@material-ui/core';
+import { Typography, Divider, CircularProgress, Container } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import LayersList from '../components/layer/LayerList';
 import LayerActionDialog from '../components/layer/LayerActionDialog';
@@ -77,7 +77,7 @@ const LayersPage = ({auth}) => {
     }
 
     return (
-        <Box className={classes.container}>
+        <Container fixed className={classes.container}>
             <Typography variant='h4'>
                 LAYERS PAGE
             </Typography>
@@ -102,7 +102,7 @@ const LayersPage = ({auth}) => {
                 setNeedUpdateLayers={setNeedUpdateLayers}
                 auth={auth}
             />
-        </Box>
+        </Container>
     );
 }
 

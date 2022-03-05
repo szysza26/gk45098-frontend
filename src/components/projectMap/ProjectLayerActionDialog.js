@@ -30,6 +30,13 @@ const ProjectLayerActionDialog = ({action, setAction, availableLayers, addProjec
             case 'layerId':
                 setLayerId(value);
                 break;
+            case 'pointColor':
+            case 'strokeColor':
+            case 'fillColor':
+            case 'pointSize':
+            case 'strokeWidth':
+                setStyle(prev => ({...prev, [type]: value}));
+                break;
             default:
                 break;
         }
@@ -111,6 +118,38 @@ const ProjectLayerActionDialog = ({action, setAction, availableLayers, addProjec
                         </MenuItem>
                     ))}
                 </TextField>
+                <TextField
+                    label='pointColor'
+                    fullWidth
+                    value={style.pointColor}
+                    onChange={e => handleChange('pointColor', e.target.value)}
+                />
+                <TextField
+                    label='strokeColor'
+                    fullWidth
+                    value={style.strokeColor}
+                    onChange={e => handleChange('strokeColor', e.target.value)}
+                />
+                <TextField
+                    label='fillColor'
+                    fullWidth
+                    value={style.fillColor}
+                    onChange={e => handleChange('fillColor', e.target.value)}
+                />
+                <TextField
+                    label='pointSize'
+                    type='number'
+                    fullWidth
+                    value={style.pointSize}
+                    onChange={e => handleChange('pointSize', e.target.value)}
+                />
+                <TextField
+                    label='strokeWidth'
+                    type='number'
+                    fullWidth
+                    value={style.strokeWidth}
+                    onChange={e => handleChange('strokeWidth', e.target.value)}
+                />
             </>
         )
     }

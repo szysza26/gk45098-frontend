@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography } from '@material-ui/core';
+import { Typography, Container } from '@material-ui/core';
 
 const useStyles = makeStyles({
     container: {
@@ -12,7 +12,7 @@ const HomePage = ({auth}) => {
     const classes = useStyles();
 
     return (
-        <Box className={classes.container}>
+        <Container fixed className={classes.container}>
             <Typography variant='h6'>
                 <b>Username: </b>{auth.username}
             </Typography>
@@ -25,7 +25,7 @@ const HomePage = ({auth}) => {
             <Typography variant='h6'>
                 <b>Expire: </b>{new Date(auth.exp * 1000).toISOString()}
             </Typography>
-        </Box>
+        </Container>
     );
 }
 

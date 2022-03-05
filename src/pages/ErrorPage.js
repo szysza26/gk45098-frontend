@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box } from '@material-ui/core';
+import { Container } from '@material-ui/core';
 
 const useStyles = makeStyles({
     container: {
@@ -12,9 +12,9 @@ const ErrorPage = () => {
     const classes = useStyles();
 
     return (
-        <Box className={classes.container}>
+        <Container fixed className={classes.container}>
             ERROR PAGE
-        </Box>
+        </Container>
     );
 }
 

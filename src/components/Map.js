@@ -6,7 +6,7 @@ import * as proj from 'ol/proj';
 import 'ol/ol.css';
 import { createTileLayer, createVectorLayer } from '../tools/layers';
 import { createOSM, createVectorSourceFromData, createVectorSourceFromUrl } from '../tools/sources';
-import { createDefaultStyles } from '../tools/styles';
+import { createStyles } from '../tools/styles';
 import { createModify, createDraw, createSnap } from "../tools/interactions";
 import { Vector as VectorLayer } from 'ol/layer';
 import GeoJSON from 'ol/format/GeoJSON';
@@ -36,7 +36,7 @@ const Map = React.memo(({layer, requestSynchronizeLayer, synchronizeLayer, proje
     useEffect(() => {
         if(!mapRef?.current || !layer) return;
 
-        const style = createDefaultStyles();
+        const style = createStyles();
         const vectorSource = createVectorSourceFromData(layer.data);
         const vectorLayer = createVectorLayer(vectorSource, style);
         mapRef.current.addLayer(vectorLayer);
@@ -80,13 +80,30 @@ const Map = React.memo(({layer, requestSynchronizeLayer, synchronizeLayer, proje
         const currentLayersId = project.layers.map(projectLayer => projectLayer.id);
 
         prevLayers.forEach(layer => {
-            if(currentLayersId.includes(layer.get('idProjectLayer'))) return;
-            mapRef.current.removeLayer(layer);
+            if(currentLayersId.includes(layer.get('idProjectLayer'))){
+                const projectLayer = project.layers.filter(projectLayer => projectLayer.id === layer.get('idProjectLayer'))[0];
+                const style = createStyles(
+                    projectLayer.style.pointColor,
+                    projectLayer.style.strokeColor,
+                    projectLayer.style.fillColor,
+                    projectLayer.style.pointSize,
+                    projectLayer.style.strokeWidth
+                );
+                layer.setStyle(style);
+            }else {
+                mapRef.current.removeLayer(layer);
+            }
         })
 
         project.layers.forEach(projectLayer => {
             if(prevLayersId.includes(projectLayer.id)) return;
-            const style = createDefaultStyles();
+            const style = createStyles(
+                projectLayer.style.pointColor,
+                projectLayer.style.strokeColor,
+                projectLayer.style.fillColor,
+                projectLayer.style.pointSize,
+                projectLayer.style.strokeWidth
+            );
             const vectorSource = createVectorSourceFromUrl(`http://localhost:8080/api/layers/${projectLayer.layerId}`, auth.token);
             const vectorLayer = createVectorLayer(vectorSource, style);
             vectorLayer.set('idProjectLayer', projectLayer.id);
