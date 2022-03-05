@@ -3,7 +3,7 @@ import {Style, Circle, Stroke, Fill } from 'ol/style';
 export const createStyles = (
     pointColor = 'rgba(0, 0, 255, 1.0)', 
     strokeColor = 'rgba(0, 0, 255, 1.0)', 
-    fillColor = 'rgba(255, 255, 255, 0.2)', 
+    fillColor = 'rgba(255, 255, 255, 0.5)', 
     pointSize = 5, 
     strokeWidth = 2
 ) => {

@@ -90,6 +90,7 @@ const Map = React.memo(({layer, requestSynchronizeLayer, synchronizeLayer, proje
                     projectLayer.style.strokeWidth
                 );
                 layer.setStyle(style);
+                layer.setZIndex(projectLayer.zIndex);
             }else {
                 mapRef.current.removeLayer(layer);
             }
@@ -105,7 +106,7 @@ const Map = React.memo(({layer, requestSynchronizeLayer, synchronizeLayer, proje
                 projectLayer.style.strokeWidth
             );
             const vectorSource = createVectorSourceFromUrl(`http://localhost:8080/api/layers/${projectLayer.layerId}`, auth.token);
-            const vectorLayer = createVectorLayer(vectorSource, style);
+            const vectorLayer = createVectorLayer(vectorSource, style, projectLayer.zIndex);
             vectorLayer.set('idProjectLayer', projectLayer.id);
             mapRef.current.addLayer(vectorLayer);
         })
