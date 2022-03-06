@@ -143,7 +143,7 @@ const ProjectMapPage = ({auth}) => {
 
     const renderAlert = () => {
         return (
-            <Snackbar open={alert} autoHideDuration={10000} onClose={() => setAlert(null)}>
+            <Snackbar open={!!alert} autoHideDuration={10000} onClose={() => setAlert(null)}>
                 <Alert onClose={() => setAlert(null)} severity={alert?.type}>
                     {alert?.text}
                 </Alert>

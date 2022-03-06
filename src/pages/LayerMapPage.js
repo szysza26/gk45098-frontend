@@ -58,17 +58,24 @@ const LayerMapPage = ({auth}) => {
 
     }, [needUpdateLayer, auth, params])
 
-    const synchronizeLayer = (featureCollection) => {
+    const synchronizeLayer = (featureCollection, attributes) => {
         const url = `http://localhost:8080/api/layers/${params.id}`
         const config = { headers: { Authorization: `Bearer ${auth.token}` } }
 
-        const data = {
-            ...layer,
-            data: JSON.parse(featureCollection)
+        const data = layer;
+
+        if(featureCollection){
+            data.data = JSON.parse(featureCollection);
         }
+
+        if(attributes){
+            data.attributes = attributes;
+        }
+
         delete data.id
         delete data.data.id
         data.data.features.forEach(feature => delete feature.id)
+        data.attributes.forEach(attribute => delete attribute.id)
 
         axios.put(url, data, config)
             .then(res => {
@@ -89,13 +96,9 @@ const LayerMapPage = ({auth}) => {
             })
     }
 
-    const updateAttributes = (newAttributes) => {
-        console.log(newAttributes);
-    }
-
     const renderAlert = () => {
         return (
-            <Snackbar open={alert} autoHideDuration={10000} onClose={() => setAlert(null)}>
+            <Snackbar open={!!alert} autoHideDuration={10000} onClose={() => setAlert(null)}>
                 <Alert onClose={() => setAlert(null)} severity={alert?.type}>
                     {alert?.text}
                 </Alert>
@@ -134,7 +137,7 @@ const LayerMapPage = ({auth}) => {
                 open={openAttributeTable}
                 setOpen={setOpenAttributeTable}
                 attributes={layer?.attributes}
-                updateAttributes={updateAttributes}
+                synchronizeLayer={synchronizeLayer}
             />
         </Box>
     );
