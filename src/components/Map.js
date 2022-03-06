@@ -70,7 +70,8 @@ const Map = React.memo(({layer, requestSynchronizeLayer, synchronizeLayer, proje
             synchronizeLayer(new GeoJSON().writeFeatures(features, {dataProjection: 'EPSG:4326', featureProjection: "EPSG:3857"}));
         }
 
-    }, [requestSynchronizeLayer, synchronizeLayer])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [requestSynchronizeLayer])
 
     useEffect(() => {
         if(!auth?.token || !mapRef?.current || !project) return;
