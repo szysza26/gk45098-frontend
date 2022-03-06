@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Box, Typography, Button, Snackbar } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import Map from '../components/Map';
+import AttributeTable from '../components/layerMap/AttributeTable';
 
 const useStyles = makeStyles({
     container: {
@@ -33,6 +34,8 @@ const LayerMapPage = ({auth}) => {
     const [requestSynchronizeLayer, setRequestSynchronizeLayer] = useState(false);
     const [needUpdateLayer, setNeedUpdateLayer] = useState(true);
     const [layer, setLayer] = useState(null);
+
+    const [openAttributeTable, setOpenAttributeTable] = useState(false);
 
     useEffect(() => {
         if(!needUpdateLayer || !auth?.token) return;
@@ -86,6 +89,10 @@ const LayerMapPage = ({auth}) => {
             })
     }
 
+    const updateAttributes = (newAttributes) => {
+        console.log(newAttributes);
+    }
+
     const renderAlert = () => {
         return (
             <Snackbar open={alert} autoHideDuration={10000} onClose={() => setAlert(null)}>
@@ -109,6 +116,13 @@ const LayerMapPage = ({auth}) => {
                 >
                     SYNCHRONIZE
                 </Button>
+                <Button 
+                    className={classes.synchronizeButton}
+                    variant='contained'
+                    onClick={() => setOpenAttributeTable(true)}
+                >
+                    ATTRIBUTES
+                </Button>
             </Box>
             <Map
                 layer={layer}
@@ -116,6 +130,12 @@ const LayerMapPage = ({auth}) => {
                 synchronizeLayer={synchronizeLayer}
             />
             {renderAlert()}
+            <AttributeTable
+                open={openAttributeTable}
+                setOpen={setOpenAttributeTable}
+                attributes={layer?.attributes}
+                updateAttributes={updateAttributes}
+            />
         </Box>
     );
 }
