@@ -1,7 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, MenuItem } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { Box, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, MenuItem, Typography, Divider, Accordion, AccordionSummary, AccordionDetails } from '@material-ui/core';
+import { SketchPicker } from 'react-color';
+import { colorToRgba } from '../../helpers/colors';
+
+const useStyles = makeStyles({
+    divider: {
+        margin: 10,
+        backgroundColor: 'rgba(255, 255, 255, 1)'
+    },
+});
 
 const ProjectLayerActionDialog = ({action, setAction, availableLayers, addProjectLayer, editProjectLayer, deleteProjectLayer}) => {
+    const classes = useStyles();
+
     const [nameInLegend, setNameInLegend] = useState('');
     const [zIndex, setZIndex] = useState(0);
     const [style, setStyle] = useState({});
@@ -88,6 +100,61 @@ const ProjectLayerActionDialog = ({action, setAction, availableLayers, addProjec
         }
     }
 
+    const renderStyleAccordion = () => {
+        return (
+            <Accordion>
+                <AccordionSummary>
+                    <Typography>
+                        Style
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Box>
+                <Typography>
+                    Point color:
+                </Typography>
+                <SketchPicker
+                    color={style.pointColor}
+                    onChangeComplete={color => handleChange('pointColor', colorToRgba(color.rgb))}
+                />
+                <Divider className={classes.divider}/>
+                <Typography>
+                    Stroke color:
+                </Typography>
+                <SketchPicker
+                    color={style.strokeColor}
+                    onChangeComplete={color => handleChange('strokeColor', colorToRgba(color.rgb))}
+                />
+                <Divider className={classes.divider}/>
+                <Typography>
+                    Fill color:
+                </Typography>
+                <SketchPicker
+                    color={style.fillColor}
+                    onChangeComplete={color => handleChange('fillColor', colorToRgba(color.rgb))}
+                />
+                <Divider className={classes.divider}/>
+                <TextField
+                    label='pointSize'
+                    type='number'
+                    fullWidth
+                    value={style.pointSize}
+                    onChange={e => handleChange('pointSize', e.target.value)}
+                />
+                <Divider className={classes.divider}/>
+                <TextField
+                    label='strokeWidth'
+                    type='number'
+                    fullWidth
+                    value={style.strokeWidth}
+                    onChange={e => handleChange('strokeWidth', e.target.value)}
+                />
+                    </Box>
+                </AccordionDetails>
+            </Accordion>
+        )
+    }
+
     const renderForm = () => {
         return (
             <>
@@ -97,6 +164,7 @@ const ProjectLayerActionDialog = ({action, setAction, availableLayers, addProjec
                     value={nameInLegend}
                     onChange={e => handleChange('nameInLegend', e.target.value)}
                 />
+                <Divider className={classes.divider}/>
                 <TextField
                     label='zIndex'
                     type='number'
@@ -104,6 +172,7 @@ const ProjectLayerActionDialog = ({action, setAction, availableLayers, addProjec
                     value={zIndex}
                     onChange={e => handleChange('zIndex', e.target.value)}
                 />
+                <Divider className={classes.divider}/>
                 <TextField
                     label='layer'
                     select
@@ -118,38 +187,8 @@ const ProjectLayerActionDialog = ({action, setAction, availableLayers, addProjec
                         </MenuItem>
                     ))}
                 </TextField>
-                <TextField
-                    label='pointColor'
-                    fullWidth
-                    value={style.pointColor}
-                    onChange={e => handleChange('pointColor', e.target.value)}
-                />
-                <TextField
-                    label='strokeColor'
-                    fullWidth
-                    value={style.strokeColor}
-                    onChange={e => handleChange('strokeColor', e.target.value)}
-                />
-                <TextField
-                    label='fillColor'
-                    fullWidth
-                    value={style.fillColor}
-                    onChange={e => handleChange('fillColor', e.target.value)}
-                />
-                <TextField
-                    label='pointSize'
-                    type='number'
-                    fullWidth
-                    value={style.pointSize}
-                    onChange={e => handleChange('pointSize', e.target.value)}
-                />
-                <TextField
-                    label='strokeWidth'
-                    type='number'
-                    fullWidth
-                    value={style.strokeWidth}
-                    onChange={e => handleChange('strokeWidth', e.target.value)}
-                />
+                <Divider className={classes.divider}/>
+                {renderStyleAccordion()}
             </>
         )
     }

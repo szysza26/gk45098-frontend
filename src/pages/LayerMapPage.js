@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography, Button } from '@material-ui/core';
+import { Box, Typography, Button, Snackbar } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import Map from '../components/Map';
 
 const useStyles = makeStyles({
@@ -27,6 +28,8 @@ const LayerMapPage = ({auth}) => {
     const classes = useStyles();
     const params = useParams();
 
+    const [alert, setAlert] = useState(null);
+
     const [requestSynchronizeLayer, setRequestSynchronizeLayer] = useState(false);
     const [needUpdateLayer, setNeedUpdateLayer] = useState(true);
     const [layer, setLayer] = useState(null);
@@ -42,6 +45,10 @@ const LayerMapPage = ({auth}) => {
                 setLayer(res.data);
             }).catch(err => {
                 console.log(err);
+                setAlert({
+                    type: 'error',
+                    text: 'Failed load layer.'
+                });
             }).finally(() => {
                 setNeedUpdateLayer(false);
             })
@@ -61,12 +68,32 @@ const LayerMapPage = ({auth}) => {
         data.data.features.forEach(feature => delete feature.id)
 
         axios.put(url, data, config)
+            .then(res => {
+                setAlert({
+                    type: 'success',
+                    text: 'Success synchronize layer.'
+                });
+            })
             .catch(err => {
                 console.log(err);
+                setAlert({
+                    type: 'error',
+                    text: 'Failed synchronize layer.'
+                });
             }).finally(() => {
                 setRequestSynchronizeLayer(false);
                 setNeedUpdateLayer(true);
             })
+    }
+
+    const renderAlert = () => {
+        return (
+            <Snackbar open={alert} autoHideDuration={10000} onClose={() => setAlert(null)}>
+                <Alert onClose={() => setAlert(null)} severity={alert?.type}>
+                    {alert?.text}
+                </Alert>
+            </Snackbar>
+        )
     }
 
     return (
@@ -88,6 +115,7 @@ const LayerMapPage = ({auth}) => {
                 requestSynchronizeLayer={requestSynchronizeLayer}
                 synchronizeLayer={synchronizeLayer}
             />
+            {renderAlert()}
         </Box>
     );
 }

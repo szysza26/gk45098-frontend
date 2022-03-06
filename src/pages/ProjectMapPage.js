@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography, IconButton } from '@material-ui/core';
+import { Box, Typography, IconButton, Snackbar } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import Map from '../components/Map';
 import MenuIcon from '@material-ui/icons/Menu';
 import ProjectMapMenu from '../components/projectMap/ProjectMapMenu';
@@ -29,6 +30,8 @@ const ProjectMapPage = ({auth}) => {
     const classes = useStyles();
     const params = useParams();
 
+    const [alert, setAlert] = useState(null);
+
     const [isOpenMenu, setIsOpenMenu] = useState(false);
     const [needUpdateProject, setNeedUpdateProject] = useState(true);
     const [project, setProject] = useState(null);
@@ -45,6 +48,10 @@ const ProjectMapPage = ({auth}) => {
                 setAvailableLayers(res.data);
             }).catch(err => {
                 console.log(err);
+                setAlert({
+                    type: 'error',
+                    text: 'Failed load available layers.'
+                });
             })
 
     }, [auth, params])
@@ -60,6 +67,10 @@ const ProjectMapPage = ({auth}) => {
                 setProject(res.data);
             }).catch(err => {
                 console.log(err);
+                setAlert({
+                    type: 'error',
+                    text: 'Failed load project.'
+                });
             }).finally(() => {
                 setNeedUpdateProject(false);
             })
@@ -77,8 +88,16 @@ const ProjectMapPage = ({auth}) => {
         axios.post(url, data, config)
             .then(res => {
                 setNeedUpdateProject(true);
+                setAlert({
+                    type: 'success',
+                    text: 'Success add layer to project.'
+                });
             }).catch(err => {
                 console.log(err);
+                setAlert({
+                    type: 'error',
+                    text: 'Failed add layer to project.'
+                });
             })
     }
 
@@ -89,8 +108,16 @@ const ProjectMapPage = ({auth}) => {
         axios.put(url, data, config)
             .then(res => {
                 setNeedUpdateProject(true);
+                setAlert({
+                    type: 'success',
+                    text: 'Success edit project layer.'
+                });
             }).catch(err => {
                 console.log(err);
+                setAlert({
+                    type: 'error',
+                    text: 'Failed edit project layer.'
+                });
             })
     }
 
@@ -101,9 +128,27 @@ const ProjectMapPage = ({auth}) => {
         axios.delete(url, config)
             .then(res => {
                 setNeedUpdateProject(true);
+                setAlert({
+                    type: 'success',
+                    text: 'Success remove project layer.'
+                });
             }).catch(err => {
                 console.log(err);
+                setAlert({
+                    type: 'error',
+                    text: 'Failed remove project layer.'
+                });
             })
+    }
+
+    const renderAlert = () => {
+        return (
+            <Snackbar open={alert} autoHideDuration={10000} onClose={() => setAlert(null)}>
+                <Alert onClose={() => setAlert(null)} severity={alert?.type}>
+                    {alert?.text}
+                </Alert>
+            </Snackbar>
+        )
     }
 
     return (
@@ -132,6 +177,7 @@ const ProjectMapPage = ({auth}) => {
                 project={project}
                 auth={auth}
             />
+            {renderAlert()}
         </Box>
     );
 }
