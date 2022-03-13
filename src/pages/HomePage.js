@@ -17,13 +17,10 @@ const HomePage = ({auth}) => {
                 <b>Username: </b>{auth.username}
             </Typography>
             <Typography variant='h6'>
-                <b>Role: </b>{auth.role}
-            </Typography>
-            <Typography variant='h6'>
                 <b>Token: </b>{auth.token}
             </Typography>
             <Typography variant='h6'>
-                <b>Expire: </b>{new Date(auth.exp * 1000).toISOString()}
+                <b>Expire: </b>{new Date(auth.exp).toISOString()}
             </Typography>
         </Container>
     );

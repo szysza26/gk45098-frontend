@@ -1,110 +1,57 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import jwt_decode from 'jwt-decode';
+import React from 'react';
+import { GoogleLogin } from 'react-google-login';
 import { makeStyles } from '@material-ui/core/styles';
-import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, CircularProgress } from '@material-ui/core';
+import { Dialog, Divider, Typography } from '@material-ui/core';
+import { colors } from '../../helpers/colors';
 
 const useStyles = makeStyles({
-    loader: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0, 
-        margin: 'auto',
+    dialog: {
+        padding: 30,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    divider: {
+        marginTop: 10,
+        marginBottom: 10,
+        width: '100%',
+        backgroundColor: colors.blackTransparent,
+        borderRadius: 3,
+        height: 6,
     }
 });
 
 const Login = ({auth, setAuth}) => {
     const classes = useStyles();
 
-    const [load, setLoad] = useState(false);
-    const [error, setError] = useState(false);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-
-    const handleChange = (type, value) => {
-        switch(type){
-            case 'username':
-                setUsername(value);
-                break;
-            case 'password':
-                setPassword(value);
-                break;
-            default:
-                break;
-        }
-        setError(false);
+    const handleSuccess = res => {
+        console.log(res)
+        setAuth({
+            token: res.tokenId,
+            username: res.profileObj.email,
+            exp: res.tokenObj.expires_at
+        })
     }
 
-    const handleSubmit = e => {
-        e.preventDefault();
-        setLoad(true);
-
-        const url = 'http://localhost:8080/api/login';
-        const data = { username: username, password: password };
-
-        axios.post(url, data).then(res => {
-            const token = res.data.token;
-            const data = jwt_decode(token);
-            setUsername('');
-            setPassword('');
-            setError(false);
-            setAuth({
-                token: res.data.token,
-                role: data.role,
-                username: data.sub,
-                exp: data.exp
-            })
-        }).catch(err => {
-            setError(true);
-        }).finally(() => {
-            setLoad(false);
-        })
+    const handleError = err => {
+        console.log(err);
+        setAuth(null);
     }
 
     return (
         <Dialog
             open={auth === null}
+            classes={{paper: classes.dialog}}
         >
-            <form>
-                <DialogTitle>
-                    Login
-                </DialogTitle>
-                <DialogContent>
-                    <TextField
-                        label='username'
-                        fullWidth
-                        value={username}
-                        onChange={e => handleChange('username', e.target.value)}
-                        error={error}
-                        disabled={load}
-                        autoFocus
-                    />
-                    <TextField
-                        label='password'
-                        fullWidth
-                        type='password'
-                        value={password}
-                        onChange={e => handleChange('password', e.target.value)}
-                        error={error}
-                        disabled={load}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button 
-                        onClick={handleSubmit}
-                        variant='contained'
-                        color='primary'
-                        disabled={load}
-                        type="submit"
-                        fullWidth
-                    >
-                        Login
-                    </Button>
-                </DialogActions>
-            </form>
-            {load && <CircularProgress className={classes.loader}/>}
+            <Typography>
+                Logowanie
+            </Typography>
+            <Divider className={classes.divider}/>
+            <GoogleLogin
+                clientId="584824258037-4odhcu6i4lhso2hd5ucuv5tn3r1d7563.apps.googleusercontent.com"
+                onSuccess={handleSuccess}
+                onFailure={handleError}
+            />
         </Dialog>
     );
 }

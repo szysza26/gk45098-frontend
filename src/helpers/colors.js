@@ -7,6 +7,7 @@ export const colors = {
     info: '#2196F3',
     warning: '#ff9800',
     error: '#f44336',
+    blackTransparent: 'rgba(0, 0, 0, 0.2)'
 }
 
 export const colorToRgba = colorObject => {
