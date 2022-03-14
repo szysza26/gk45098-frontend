@@ -64,8 +64,10 @@ const LayerMapPage = ({auth}) => {
 
         const data = layer;
 
-        if(featureCollection){
+        if(featureCollection && typeof featureCollection === 'string'){
             data.data = JSON.parse(featureCollection);
+        }else if(featureCollection){
+            data.data = featureCollection;
         }
 
         if(attributes){
@@ -137,6 +139,7 @@ const LayerMapPage = ({auth}) => {
                 open={openAttributeTable}
                 setOpen={setOpenAttributeTable}
                 attributes={layer?.attributes}
+                data={layer?.data}
                 synchronizeLayer={synchronizeLayer}
             />
         </Box>

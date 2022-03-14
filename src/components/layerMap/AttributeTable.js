@@ -9,10 +9,11 @@ const useStyles = makeStyles({
     },
 });
 
-const AttributeTable = ({open, setOpen, attributes, synchronizeLayer}) => {
+const AttributeTable = ({open, setOpen, attributes, data, synchronizeLayer}) => {
     const classes = useStyles();
 
     const [newAttributes, setNewAttributes] = useState([])
+    const [newData, setNewData] = useState(null)
 
     const [name, setName] = useState('');
     const [type, setType] = useState('string');
@@ -36,6 +37,11 @@ const AttributeTable = ({open, setOpen, attributes, synchronizeLayer}) => {
         setNewAttributes(attributes);
     }, [attributes])
 
+    useEffect(() => {
+        if(!data) return;
+        setNewData(data);
+    }, [data])
+
     const handleCancel = () => {
         setName('');
         setType('string');
@@ -45,7 +51,7 @@ const AttributeTable = ({open, setOpen, attributes, synchronizeLayer}) => {
     const handleOk = () => {
         setName('');
         setType('string');
-        synchronizeLayer(undefined, newAttributes);
+        synchronizeLayer(newData, newAttributes);
         setOpen(false);
     }
 
@@ -68,7 +74,25 @@ const AttributeTable = ({open, setOpen, attributes, synchronizeLayer}) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {/** TODO */}
+                        {newData?.features.map((feature, index) => 
+                            <TableRow key={`attribute_row_${index}`}>
+                                {newAttributes.map(attribute =>
+                                    <TableCell key={`attribute_row_${index}_value_${attribute.name}`}>
+                                        <TextField
+                                            type={attribute.type === 'string' ? 'string' : 'number'}
+                                            value={feature.properties ? feature.properties[attribute.name] : ''}
+                                            onChange={e => {
+                                                const value = attribute.type === 'integer' ? parseInt(e.target.value) : attribute.type === 'float' ? parseFloat(e.target.value) : e.target.value;
+                                                const tmpData = {...newData};
+                                                if(!tmpData.features[index].properties) tmpData.features[index].properties = {};
+                                                tmpData.features[index].properties[attribute.name] = value;
+                                                setNewData(tmpData);
+                                            }}
+                                        />
+                                    </TableCell>
+                                )}
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </Box>
