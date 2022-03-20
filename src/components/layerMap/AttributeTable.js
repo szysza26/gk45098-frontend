@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Dialog, DialogActions, DialogContent, DialogTitle, Button, Table, TableHead, TableBody, TableRow, TableCell, TextField, Box, MenuItem, Divider } from '@material-ui/core';
+import { Dialog, DialogActions, DialogContent, DialogTitle, Button, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, TextField, Box, MenuItem, Divider, IconButton } from '@material-ui/core';
+import { colors } from '../../helpers/colors';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles({
     divider: {
         margin: 10,
         backgroundColor: 'rgba(255, 255, 255, 1)'
     },
+    deleteIcon: {
+        color: colors.error
+    }
 });
 
 const AttributeTable = ({open, setOpen, attributes, data, synchronizeLayer}) => {
@@ -30,6 +35,16 @@ const AttributeTable = ({open, setOpen, attributes, data, synchronizeLayer}) => 
         setNewAttributes(prev => ([...prev, {name: name, type: type}]))
         setName('');
         setType('string');
+    }
+
+    const handleDeleteColumn = attributeName => {
+        setNewAttributes(prev => prev.filter(attribute => attribute.name !== attributeName));
+        const features = newData.features.map(feature => {
+            if(!feature.properties || !([attributeName] in feature.properties)) return feature;
+            delete feature.properties[attributeName];
+            return feature;
+        })
+        setNewData(prev => ({...prev, features}));
     }
 
     useEffect(() => {
@@ -63,38 +78,53 @@ const AttributeTable = ({open, setOpen, attributes, data, synchronizeLayer}) => 
         return (
             <Box>
                 {renderAddColumn()}
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            {newAttributes.map(attribute => 
-                                <TableCell key={`attribute_name_${attribute.name}`}>
-                                    {attribute.name}
+                <Divider className={classes.divider}/>
+                <TableContainer>
+                    <Table className={classes.table} size="small">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>
+                                    ID
                                 </TableCell>
-                            )}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {newData?.features.map((feature, index) => 
-                            <TableRow key={`attribute_row_${index}`}>
-                                {newAttributes.map(attribute =>
-                                    <TableCell key={`attribute_row_${index}_value_${attribute.name}`}>
-                                        <TextField
-                                            type={attribute.type === 'string' ? 'string' : 'number'}
-                                            value={feature.properties ? feature.properties[attribute.name] : ''}
-                                            onChange={e => {
-                                                const value = attribute.type === 'integer' ? parseInt(e.target.value) : attribute.type === 'float' ? parseFloat(e.target.value) : e.target.value;
-                                                const tmpData = {...newData};
-                                                if(!tmpData.features[index].properties) tmpData.features[index].properties = {};
-                                                tmpData.features[index].properties[attribute.name] = value;
-                                                setNewData(tmpData);
-                                            }}
-                                        />
+                                {newAttributes.map(attribute => 
+                                    <TableCell key={`attribute_name_${attribute.name}`}>
+                                        {attribute.name}
+                                        <IconButton
+                                            className={classes.deleteIcon}
+                                            onClick={e => handleDeleteColumn(attribute.name)}
+                                        >
+                                            <DeleteIcon />
+                                        </IconButton>
                                     </TableCell>
                                 )}
                             </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
+                        </TableHead>
+                        <TableBody>
+                            {newData?.features.map((feature, index) => 
+                                <TableRow key={`attribute_row_${index}`}>
+                                    <TableCell>
+                                        {feature.id}
+                                    </TableCell>
+                                    {newAttributes.map(attribute =>
+                                        <TableCell key={`attribute_row_${index}_value_${attribute.name}`}>
+                                            <TextField
+                                                type={attribute.type === 'string' ? 'string' : 'number'}
+                                                value={feature.properties ? feature.properties[attribute.name] : ''}
+                                                onChange={e => {
+                                                    const value = attribute.type === 'integer' ? parseInt(e.target.value) : attribute.type === 'float' ? parseFloat(e.target.value) : e.target.value;
+                                                    const tmpData = {...newData};
+                                                    if(!tmpData.features[index].properties) tmpData.features[index].properties = {};
+                                                    tmpData.features[index].properties[attribute.name] = value;
+                                                    setNewData(tmpData);
+                                                }}
+                                            />
+                                        </TableCell>
+                                    )}
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             </Box>
         )
     }
