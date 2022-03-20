@@ -7,6 +7,7 @@ import { Alert } from '@material-ui/lab';
 import Map from '../components/Map';
 import MenuIcon from '@material-ui/icons/Menu';
 import ProjectMapMenu from '../components/projectMap/ProjectMapMenu';
+import Info from '../components/projectMap/Info';
 
 const useStyles = makeStyles({
     container: {
@@ -36,6 +37,8 @@ const ProjectMapPage = ({auth}) => {
     const [needUpdateProject, setNeedUpdateProject] = useState(true);
     const [project, setProject] = useState(null);
     const [availableLayers, setAvailableLayers] = useState([]);
+
+    const [info, setInfo] = useState(null);
 
     useEffect(() => {
         if(!auth?.token) return;
@@ -173,9 +176,14 @@ const ProjectMapPage = ({auth}) => {
                 editProjectLayer={editProjectLayer}
                 deleteProjectLayer={deleteProjectLayer}
             />
+            <Info
+                info={info}
+                setInfo={setInfo}
+            />
             <Map
                 project={project}
                 auth={auth}
+                setInfo={setInfo}
             />
             {renderAlert()}
         </Box>

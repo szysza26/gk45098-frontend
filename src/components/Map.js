@@ -18,7 +18,7 @@ const useStyles = makeStyles({
     },
 });
 
-const Map = React.memo(({action, setFeatureInfo, layer, requestSynchronizeLayer, synchronizeLayer, project, auth}) => {
+const Map = React.memo(({action, setFeatureInfo, layer, requestSynchronizeLayer, synchronizeLayer, project, auth, setInfo}) => {
     const classes = useStyles();
     const mapRef = useRef(null);
 
@@ -162,6 +162,30 @@ const Map = React.memo(({action, setFeatureInfo, layer, requestSynchronizeLayer,
         })
 
     }, [auth, project])
+
+    useEffect(() => {
+        if(!mapRef?.current) return;
+
+        const select = createSelect();
+        select.on('select', e => {
+            const feature = e.selected[0];
+            if(feature){
+                setInfo({
+                    properties: feature.getProperties(),
+                    deselect: () => select.getFeatures().clear()
+                });
+            }else{
+                setInfo(null);
+            }
+        })
+        mapRef.current.addInteraction(select);
+
+        return () => {
+            setInfo(null);
+            mapRef.current.removeInteraction(select);
+        }
+
+    }, [setInfo])
 
     return (
         <div id="map" className={classes.map}></div>
