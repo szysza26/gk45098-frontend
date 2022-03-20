@@ -1,4 +1,4 @@
-import {Modify, Draw, Snap} from 'ol/interaction';
+import {Modify, Draw, Snap, Select} from 'ol/interaction';
 
 export const createModify = (source) => {
     return new Modify({
@@ -16,5 +16,12 @@ export const createDraw = (source, type) => {
 export const createSnap = (source) => {
     return new Snap({
         source: source
+    });
+}
+
+export const createSelect = (withStyles = true) => {
+    return new Select({
+        style: withStyles ? undefined : null,
+        hitTolerance: 5
     });
 }

@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography, Button, Snackbar } from '@material-ui/core';
+import { Box, Typography, Button, Snackbar, Select, MenuItem } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import Map from '../components/Map';
+import FeatureInfo from '../components/layerMap/FeatureInfo';
 import AttributeTable from '../components/layerMap/AttributeTable';
 
 const useStyles = makeStyles({
@@ -31,10 +32,12 @@ const LayerMapPage = ({auth}) => {
 
     const [alert, setAlert] = useState(null);
 
+    const [action, setACtion] = useState('info');
     const [requestSynchronizeLayer, setRequestSynchronizeLayer] = useState(false);
     const [needUpdateLayer, setNeedUpdateLayer] = useState(true);
     const [layer, setLayer] = useState(null);
 
+    const [featureInfo, setFeatureInfo] = useState(null);
     const [openAttributeTable, setOpenAttributeTable] = useState(false);
 
     useEffect(() => {
@@ -114,6 +117,24 @@ const LayerMapPage = ({auth}) => {
                 <Typography variant='h6'>
                     Layer Map Page with id: {params.id}
                 </Typography>
+                <Select
+                    className={classes.synchronizeButton}
+                    value={action}
+                    onChange={e => setACtion(e.target.value)}
+                >
+                    <MenuItem value='info'>
+                        INFO
+                    </MenuItem>
+                    <MenuItem value='draw'>
+                        DRAW
+                    </MenuItem>
+                    <MenuItem value='edit'>
+                        EDIT
+                    </MenuItem>
+                    <MenuItem value='delete'>
+                        DELETE
+                    </MenuItem>
+                </Select>
                 <Button 
                     className={classes.synchronizeButton}
                     variant='contained'
@@ -130,11 +151,18 @@ const LayerMapPage = ({auth}) => {
                 </Button>
             </Box>
             <Map
+                action={action}
+                setFeatureInfo={setFeatureInfo}
                 layer={layer}
                 requestSynchronizeLayer={requestSynchronizeLayer}
                 synchronizeLayer={synchronizeLayer}
             />
             {renderAlert()}
+            <FeatureInfo 
+                featureInfo={featureInfo}
+                setFeatureInfo={setFeatureInfo}
+                attributes={layer?.attributes}
+            />
             <AttributeTable
                 open={openAttributeTable}
                 setOpen={setOpenAttributeTable}

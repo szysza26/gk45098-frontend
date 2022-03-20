@@ -5,6 +5,9 @@ import { colors } from '../../helpers/colors';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles({
+    head: {
+        fontWeight: 'bold'
+    },
     divider: {
         margin: 10,
         backgroundColor: 'rgba(255, 255, 255, 1)'
@@ -83,11 +86,11 @@ const AttributeTable = ({open, setOpen, attributes, data, synchronizeLayer}) => 
                     <Table className={classes.table} size="small">
                         <TableHead>
                             <TableRow>
-                                <TableCell>
+                                <TableCell className={classes.head}>
                                     ID
                                 </TableCell>
                                 {newAttributes.map(attribute => 
-                                    <TableCell key={`attribute_name_${attribute.name}`}>
+                                    <TableCell key={`attribute_name_${attribute.name}`} className={classes.head}>
                                         {attribute.name}
                                         <IconButton
                                             className={classes.deleteIcon}

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { makeStyles } from '@material-ui/core/styles';
 import olMap from 'ol/Map';
 import olView from 'ol/View';
@@ -7,7 +7,7 @@ import 'ol/ol.css';
 import { createTileLayer, createVectorLayer } from '../tools/layers';
 import { createOSM, createVectorSourceFromData, createVectorSourceFromUrl } from '../tools/sources';
 import { createStyles } from '../tools/styles';
-import { createModify, createDraw, createSnap } from "../tools/interactions";
+import { createModify, createDraw, createSnap, createSelect } from "../tools/interactions";
 import { Vector as VectorLayer } from 'ol/layer';
 import GeoJSON from 'ol/format/GeoJSON';
 
@@ -18,9 +18,11 @@ const useStyles = makeStyles({
     },
 });
 
-const Map = React.memo(({layer, requestSynchronizeLayer, synchronizeLayer, project, auth}) => {
+const Map = React.memo(({action, setFeatureInfo, layer, requestSynchronizeLayer, synchronizeLayer, project, auth}) => {
     const classes = useStyles();
     const mapRef = useRef(null);
+
+    const [olLayer, setOlLayer] = useState(null);
 
     useEffect(() => {
         mapRef.current = new olMap({
@@ -40,24 +42,71 @@ const Map = React.memo(({layer, requestSynchronizeLayer, synchronizeLayer, proje
         const vectorSource = createVectorSourceFromData(layer.data);
         const vectorLayer = createVectorLayer(vectorSource, style);
         mapRef.current.addLayer(vectorLayer);
-        
-        const modify = createModify(vectorSource);
-        mapRef.current.addInteraction(modify);
-
-        const draw = createDraw(vectorSource, layer.type);
-        mapRef.current.addInteraction(draw);
-
-        const snap = createSnap(vectorSource);
-        mapRef.current.addInteraction(snap);
+        setOlLayer(vectorLayer);
 
         return(() => {
+            setOlLayer(null);
             mapRef.current.removeLayer(vectorLayer);
-            mapRef.current.removeInteraction(modify);
-            mapRef.current.removeInteraction(draw);
-            mapRef.current.removeInteraction(snap);
         })
 
     }, [layer])
+
+    useEffect(() => {
+        if(!mapRef?.current || !olLayer || !layer) return;
+
+        switch(action){
+            case 'info':
+                const infoSelect = createSelect();
+                infoSelect.on('select', e => {
+                    const feature = e.selected[0];
+                    if(feature){
+                        setFeatureInfo({
+                            properties: feature.getProperties(),
+                            setProperties: properties => feature.setProperties(properties),
+                            deselect: () => infoSelect.getFeatures().clear()
+                        });
+                    }else{
+                        setFeatureInfo(null);
+                    }
+                })
+                mapRef.current.addInteraction(infoSelect);
+                return () => {
+                    setFeatureInfo(null);
+                    mapRef.current.removeInteraction(infoSelect);
+                }
+            case 'draw':
+                const draw = createDraw(olLayer.getSource(), layer.type);
+                const drawSnap = createSnap(olLayer.getSource());
+                mapRef.current.addInteraction(draw);
+                mapRef.current.addInteraction(drawSnap);
+                return () => {
+                    mapRef.current.removeInteraction(draw);
+                    mapRef.current.removeInteraction(drawSnap);
+                };
+            case 'edit':
+                const modify = createModify(olLayer.getSource());
+                const modifySnap = createSnap(olLayer.getSource());
+                mapRef.current.addInteraction(modify);
+                mapRef.current.addInteraction(modifySnap);
+                return () => {
+                    mapRef.current.removeInteraction(modify);
+                    mapRef.current.removeInteraction(modifySnap);
+                };
+            case 'delete':
+                const deleteSelect = createSelect(false);
+                deleteSelect.on('select', e => {
+                    const feature = e.selected[0];
+                    if(feature) olLayer.getSource().removeFeature(feature);
+                })
+                mapRef.current.addInteraction(deleteSelect);
+                return () => {
+                    mapRef.current.removeInteraction(deleteSelect);
+                }
+            default:
+                return;
+        }
+        
+    }, [action, olLayer, setFeatureInfo, layer])
 
     useEffect(() => {
         if(!mapRef?.current || !requestSynchronizeLayer) return;
