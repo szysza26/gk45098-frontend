@@ -164,7 +164,7 @@ const Map = React.memo(({action, setFeatureInfo, layer, requestSynchronizeLayer,
     }, [auth, project])
 
     useEffect(() => {
-        if(!mapRef?.current) return;
+        if(!mapRef?.current || !setInfo) return;
 
         const select = createSelect();
         select.on('select', e => {
