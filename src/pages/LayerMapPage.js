@@ -19,10 +19,18 @@ const useStyles = makeStyles({
         pointerEvents: 'none',
         width: '100%',
         position: 'absolute',
-        textAlign: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
     },
-    synchronizeButton: {
+    toolbar: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+    },
+    tool: {
         pointerEvents: 'auto',
+        margin: 5
     },
 });
 
@@ -111,14 +119,24 @@ const LayerMapPage = ({auth}) => {
         )
     }
 
-    return (
-        <Box className={classes.container}>
+    const renderHeader = () => {
+        if(!layer) return '';
+
+        return (
             <Box className={classes.header}>
                 <Typography variant='h6'>
-                    Layer Map Page with id: {params.id}
+                    Layer: {layer?.name}
                 </Typography>
+                {renderToolbar()}
+            </Box>
+        )
+    }
+
+    const renderToolbar = () => {
+        return(
+            <Box className={classes.toolbar}>
                 <Select
-                    className={classes.synchronizeButton}
+                    className={classes.tool}
                     value={action}
                     onChange={e => setACtion(e.target.value)}
                 >
@@ -136,20 +154,28 @@ const LayerMapPage = ({auth}) => {
                     </MenuItem>
                 </Select>
                 <Button 
-                    className={classes.synchronizeButton}
+                    className={classes.tool}
                     variant='contained'
                     onClick={() => setRequestSynchronizeLayer(true)}
+                    color='primary'
                 >
                     SYNCHRONIZE
                 </Button>
                 <Button 
-                    className={classes.synchronizeButton}
+                    className={classes.tool}
                     variant='contained'
                     onClick={() => setOpenAttributeTable(true)}
+                    color='primary'
                 >
                     ATTRIBUTES
                 </Button>
             </Box>
+        )
+    }
+
+    return (
+        <Box className={classes.container}>
+            {renderHeader()}
             <Map
                 action={action}
                 setFeatureInfo={setFeatureInfo}

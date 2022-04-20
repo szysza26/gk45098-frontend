@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Typography, IconButton, Snackbar } from '@material-ui/core';
+import { Box, Typography, IconButton, Snackbar, Tooltip } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import Map from '../components/Map';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -154,19 +154,28 @@ const ProjectMapPage = ({auth}) => {
         )
     }
 
-    return (
-        <Box className={classes.container}>
+    const renderHeader = () => {
+        if(!project) return '';
+        return (
             <Box className={classes.header}>
                 <Typography variant='h6'>
-                    Project Map Page - name: {project?.name}, id: {project?.id}
+                    Project: {project.name}
                 </Typography>
-                <IconButton 
-                    className={classes.hamburger}
-                    onClick={toggleMenu}
-                >
-                    <MenuIcon />
-                </IconButton>
+                <Tooltip title='project layers'>
+                    <IconButton 
+                        className={classes.hamburger}
+                        onClick={toggleMenu}
+                    >
+                        <MenuIcon />
+                    </IconButton>
+                </Tooltip>
             </Box>
+        )
+    }
+
+    return (
+        <Box className={classes.container}>
+            {renderHeader()}
             <ProjectMapMenu
                 open={isOpenMenu}
                 toggle={toggleMenu}
