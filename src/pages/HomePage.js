@@ -15,19 +15,18 @@ const HomePage = ({auth}) => {
     const [projectCount, setProjectCount] = useState(0);
     const [layerCount, setLayerCount] = useState(0);
 
-    useEffect(() => {
+    const fetch = async () => {
         const config = { headers: { Authorization: `Bearer ${auth.token}` } }
 
-        axios.get('http://localhost:8080/api/projects', config)
-            .then(res => {
-                setProjectCount(res.data.length);
-            })
+        const projects = await axios.get('http://localhost:8080/api/projects', config);
+        const layers = await axios.get('http://localhost:8080/api/layers', config);
 
-        axios.get('http://localhost:8080/api/layers', config)
-            .then(res => {
-                setLayerCount(res.data.length);
-            })
-        
+        if(projects?.data?.length) setProjectCount(projects.data.length);
+        if(layers?.data?.length) setLayerCount(layers.data.length);
+    }
+
+    useEffect(() => {
+        fetch();
     }, [auth.token])
 
     return (
