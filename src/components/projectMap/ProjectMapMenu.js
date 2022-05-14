@@ -16,6 +16,25 @@ const useStyles = makeStyles({
     icon: {
         color: colors.black,
     },
+    editButton: {
+        backgroundColor: colors.warning,
+        color: colors.white,
+        "&:hover": {
+            backgroundColor: colors.warning,
+            opacity: 0.5,
+        },
+        padding: 5,
+        marginRight: 10,
+    },
+    deleteButton: {
+        backgroundColor: colors.error,
+        color: colors.white,
+        "&:hover": {
+            backgroundColor: colors.error,
+            opacity: 0.5,
+        },
+        padding: 5,
+    },
 });
 
 const ProjectMapMenu = ({open, toggle, project, availableLayers, addProjectLayer, editProjectLayer, deleteProjectLayer}) => {

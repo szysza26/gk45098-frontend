@@ -6,7 +6,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles({
     head: {
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        width: 150,
     },
     divider: {
         margin: 10,
